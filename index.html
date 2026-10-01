@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Company Ledger — B2 Business English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF3EC; --card:#FFFFFF; --ink:#17213B; --muted:#55607A;
+  --green:#2E6A4E; --green-soft:#D7E8DC; --red:#B8323A; --red-soft:#F6DADB;
+  --yellow:#F2CF3B; --line:#C9D6CC; --rule:rgba(46,106,78,.13);
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --ipa:"Noto Sans", "Segoe UI", "Lucida Sans Unicode", "Arial Unicode MS", sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111915; --card:#18231E; --ink:#E4ECE6; --muted:#9DAAA2;
+    --green:#74C49A; --green-soft:#1F3A2C; --red:#F07F85; --red-soft:#3E2124;
+    --line:#2D3C34; --rule:rgba(116,196,154,.08);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111915; --card:#18231E; --ink:#E4ECE6; --muted:#9DAAA2;
+  --green:#74C49A; --green-soft:#1F3A2C; --red:#F07F85; --red-soft:#3E2124;
+  --line:#2D3C34; --rule:rgba(116,196,154,.08);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; color:var(--ink); font-family:var(--body); font-size:18px; line-height:1.5;
+  background-color:var(--paper);
+  background-image:repeating-linear-gradient(180deg, transparent 0 35px, var(--rule) 35px 36px);
+}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+p{margin:0 0 .8em}
+.ipa{font-family:var(--ipa)}
+
+/* top bar */
+.top{
+  position:sticky; top:0; z-index:20; background:var(--paper); border-bottom:2px solid var(--ink);
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:12px clamp(16px,3vw,32px); padding-top:calc(12px + env(safe-area-inset-top,0px));
+  margin-top:calc(-1 * env(safe-area-inset-top,0px));
+}
+.brand{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em;margin-right:auto}
+.brand small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted);margin-left:8px}
+.teams{display:flex;gap:8px;flex-wrap:wrap}
+.team{display:flex;align-items:center;gap:10px;border:2px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px 6px 10px;font-weight:700}
+.team .dot{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.team .pts{font-family:var(--display);font-variant-numeric:tabular-nums;font-size:20px}
+.team[aria-pressed="true"]{border-color:var(--ink)}
+.team[aria-pressed="true"] .dot{background:var(--yellow);box-shadow:0 0 0 3px rgba(242,207,59,.35)}
+.reset{border:2px solid var(--red);color:var(--red);background:transparent;border-radius:10px;padding:7px 12px;font-weight:700;font-size:15px}
+.reset.arm{background:var(--red);color:#fff}
+
+/* layout */
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);max-width:1240px;margin:0 auto}
+.elevator{position:sticky;top:72px;align-self:start;padding:28px 16px;display:flex;flex-direction:column-reverse;gap:4px}
+.floor-btn{display:grid;grid-template-columns:40px 1fr;align-items:center;gap:10px;text-align:left;background:transparent;border:2px solid transparent;border-radius:10px;padding:6px 10px}
+.floor-btn .num{font-family:var(--display);font-weight:800;font-size:18px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--ink);background:var(--card)}
+.floor-btn .lbl{font-weight:700;line-height:1.2}
+.floor-btn .lbl span{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+.floor-btn:hover{border-color:var(--line)}
+.floor-btn[aria-current="page"]{border-color:var(--ink);background:var(--card)}
+.floor-btn[aria-current="page"] .num{background:var(--yellow);color:#17213B;border-color:#17213B}
+
+main{padding:28px clamp(16px,3vw,40px) 80px;border-left:3px solid var(--red);min-height:80vh}
+.floor{display:none}
+.floor.active{display:block}
+.floor-head{margin-bottom:28px;max-width:62ch}
+.floor-head .where{color:var(--red);font-weight:700;margin-bottom:6px}
+.floor-head h2{font-size:clamp(34px,5vw,54px);font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+.floor-head p{color:var(--muted);font-size:19px}
+
+.activity{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:clamp(18px,3vw,28px);margin-bottom:28px}
+.activity h3{font-size:26px;font-weight:700;margin-bottom:6px}
+.activity h4{font-family:var(--display);font-size:20px;margin:20px 0 8px}
+.activity .how{color:var(--muted);margin-bottom:18px;max-width:62ch}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:2px solid var(--ink);background:var(--card);border-radius:10px;padding:10px 16px;font-weight:700}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.chip{border:2px solid var(--line);background:transparent;border-radius:999px;padding:6px 14px;font-size:16px}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+
+/* rule boxes */
+.rule{border-left:6px solid var(--yellow);background:var(--paper);border-radius:0 10px 10px 0;padding:14px 18px;margin-bottom:18px}
+.rule p:last-child{margin-bottom:0}
+.tbl{overflow-x:auto;margin-bottom:18px}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:17px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:16px}
+td b{background:var(--green-soft);padding:0 3px;border-radius:3px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:36px}
+.hero h2{font-size:clamp(40px,6.5vw,76px);font-weight:800;letter-spacing:-.03em;line-height:.98}
+.hero p{font-size:20px;color:var(--muted);max-width:44ch;margin-top:16px}
+.tower{display:flex;flex-direction:column;gap:6px}
+.tower div{border:2px solid var(--ink);border-radius:8px;padding:10px 14px;background:var(--card);display:flex;justify-content:space-between;gap:12px;font-weight:700}
+.tower div span{font-weight:400;color:var(--muted);font-size:15px;text-align:right}
+.tower div:nth-child(1){margin:0 22%}
+.tower div:nth-child(2){margin:0 11%}
+
+.sources{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.source{min-height:120px;border:2px dashed var(--ink);border-radius:12px;background:transparent;display:grid;place-items:center;text-align:center;padding:14px;font-family:var(--display);font-size:22px;font-weight:700}
+.source .hint{display:block;font-family:var(--body);font-weight:400;font-size:15px;color:var(--muted)}
+.source.revealed{border-style:solid;background:var(--green-soft)}
+.team-edit{display:flex;gap:10px;flex-wrap:wrap}
+.team-edit input{font:inherit;border:2px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--paper);color:var(--ink);width:180px}
+
+/* flashcards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:16px}
+.fc{perspective:900px;border:0;background:transparent;padding:0;height:170px;text-align:left}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .45s ease;transform-style:preserve-3d}
+.fc.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border:2px solid var(--ink);border-radius:12px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;background:var(--paper)}
+.fc-face.back{transform:rotateY(180deg);background:var(--green-soft);font-size:15px;line-height:1.4}
+.fc-face .term{font-family:var(--display);font-size:22px;font-weight:700;line-height:1.1}
+.fc-face .grp{font-size:13px;color:var(--muted)}
+.fc-face .ru{font-weight:700;font-size:17px;color:var(--green)}
+
+/* sound board */
+.sound-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.tile{border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:4px}
+.tile:hover{border-color:var(--ink)}
+.tile.playing{border-color:var(--ink);background:var(--yellow);color:#17213B}
+.tile .w{font-family:var(--display);font-size:21px;font-weight:500}
+.syl{padding:0 1px}
+.syl.st{font-weight:800;text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:3px;text-underline-offset:4px}
+.syl + .syl::before{content:"·";color:var(--muted);font-weight:400;padding:0 1px}
+.tile .ipa{font-size:16px;color:var(--muted)}
+.tile.playing .ipa{color:#17213B}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.tip{border:2px solid var(--line);border-radius:12px;padding:14px;background:var(--paper)}
+.tip h4{margin:0 0 6px}
+.tip p{font-size:16px;margin-bottom:10px}
+.say{border:2px solid var(--ink);background:var(--card);border-radius:999px;padding:4px 12px;font-size:15px;font-weight:700;margin:0 6px 6px 0}
+.say::before{content:"▶ ";font-size:12px}
+
+/* stage games */
+.stage{border:2px solid var(--line);border-radius:12px;padding:24px;text-align:center;background:var(--paper)}
+.stage-item{font-family:var(--display);font-size:clamp(24px,3.4vw,36px);font-weight:700;margin:6px 0 20px;min-height:2.3em;display:grid;place-items:center}
+.bins{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bin{min-width:120px;padding:14px 20px;border-radius:12px;border:2px solid var(--ink);background:var(--card);font-weight:700;font-size:20px}
+.bin.right{background:var(--green-soft);border-color:var(--green)}
+.bin.sylbtn{font-family:var(--display);font-size:28px;min-width:80px}
+.stage-foot{display:flex;justify-content:space-between;gap:12px;margin-top:14px;color:var(--muted);font-size:16px;flex-wrap:wrap;align-items:center}
+.why{min-height:1.5em;margin-top:14px;font-size:17px}
+
+/* match */
+.match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px}
+.match .col{display:flex;flex-direction:column;gap:8px}
+.m-item{border:2px solid var(--line);background:var(--paper);border-radius:10px;padding:12px 14px;text-align:left;font-size:16px}
+.m-item.term{font-family:var(--display);font-weight:700;font-size:19px}
+.m-item.ipa{font-size:20px}
+.m-item.sel{border-color:var(--ink);background:var(--yellow);color:#17213B}
+.m-item.done{border-color:var(--green);background:var(--green-soft);opacity:.75}
+
+/* gaps + quizzes */
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding:14px;border:2px dashed var(--line);border-radius:12px}
+.word{border:2px solid var(--ink);background:var(--yellow);color:#17213B;border-radius:8px;padding:6px 12px;font-weight:700}
+.word.used{opacity:.3;text-decoration:line-through}
+.gaps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:12px;font-size:19px}
+.blank{display:inline-block;min-width:130px;border:0;border-bottom:3px solid var(--ink);background:transparent;padding:0 8px;font-weight:700;text-align:center}
+.blank.active{background:var(--yellow);color:#17213B;border-radius:6px 6px 0 0}
+.blank.ok{border-color:var(--green);color:var(--green)}
+.quiz{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:16px;font-size:19px}
+.qopts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.qopt{border:2px solid var(--line);background:var(--paper);border-radius:8px;padding:6px 12px;font-size:17px}
+.qopt:hover:not(:disabled){border-color:var(--ink)}
+.qopt.right{background:var(--green-soft);border-color:var(--green);font-weight:700}
+.qopt.wrong{background:var(--red-soft);border-color:var(--red);text-decoration:line-through}
+.gapline{display:inline-block;min-width:90px;border-bottom:3px solid var(--ink);text-align:center;font-weight:700}
+.gapline.ok{border-color:var(--green);color:var(--green)}
+.qwhy{font-size:16px;color:var(--muted);margin-top:6px}
+details.q{border-top:1px solid var(--line);padding:12px 0}
+details.q summary{cursor:pointer;font-weight:700}
+details.q div{color:var(--muted);margin-top:6px}
+
+/* reading */
+.reading{max-width:66ch;font-size:19px;line-height:1.7}
+.reading h4{font-family:var(--display);font-size:28px;margin:0 0 14px}
+.g{border:0;background:transparent;padding:0 2px;font-weight:700;border-bottom:2px dotted var(--green);color:var(--ink)}
+.g.open{background:var(--green-soft);border-radius:4px}
+.g.open::after{content:" · " attr(data-ru);font-weight:400;color:var(--green)}
+.g.found{background:var(--yellow);color:#17213B;border-radius:4px}
+.find-bar{position:sticky;top:78px;z-index:5;background:var(--ink);color:var(--paper);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:none}
+.find-bar.on{display:block}
+.find-bar .def{font-family:var(--display);font-size:22px;font-weight:700}
+.find-bar .row{margin-top:8px;font-size:15px}
+.find-bar .btn{background:transparent;color:var(--paper);border-color:var(--paper);padding:6px 12px}
+
+/* word-form spots in reading */
+.wf-count{font-size:16px;color:var(--muted);font-weight:700}
+.wf{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;background:var(--yellow);color:#17213B;border-radius:8px;padding:2px 5px;margin:0 2px;vertical-align:middle;line-height:1.3}
+.wf-gap{font-weight:800;padding:0 4px}
+.wf-opt{border:2px solid #17213B;background:#fff;color:#17213B;border-radius:6px;padding:1px 8px;font-size:16px}
+.wf-opt.wrong{opacity:.35;text-decoration:line-through}
+.wf-ok{font-weight:700;color:var(--green);border-bottom:3px solid var(--green)}
+/* debate + boss */
+.spin-out{font-family:var(--display);font-size:clamp(24px,3.2vw,34px);font-weight:700;min-height:3.4em;display:flex;align-items:center;padding:16px 0}
+.timer{font-family:var(--display);font-variant-numeric:tabular-nums;font-size:34px;font-weight:800;min-width:3ch}
+.boss-q{font-family:var(--display);font-size:clamp(24px,3.2vw,34px);font-weight:700;margin:10px 0 18px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.opt{border:2px solid var(--ink);background:var(--paper);border-radius:10px;padding:14px;text-align:left;font-size:18px}
+.opt.right{background:var(--green-soft);border-color:var(--green)}
+.opt.wrong{background:var(--red-soft);border-color:var(--red)}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--red);width:100%;transition:width 1s linear}
+.progress{font-variant-numeric:tabular-nums}
+.note{font-size:15px;color:var(--muted)}
+
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);background:var(--ink);color:var(--paper);padding:14px 22px;border-radius:12px;font-family:var(--display);font-weight:700;font-size:22px;z-index:50;transition:transform .3s ease;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{transform:translate(-50%,0)}
+#toast.bad{background:var(--red);color:#fff}
+#toast .plus{color:var(--yellow);margin-left:8px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .elevator{position:sticky;top:0;z-index:15;flex-direction:row;overflow-x:auto;padding:10px 12px;background:var(--paper);border-bottom:1px solid var(--line)}
+  .floor-btn{grid-template-columns:32px auto;flex:0 0 auto;padding:4px 10px}
+  .floor-btn .num{width:32px;height:32px;font-size:15px}
+  .floor-btn .lbl span{display:none}
+  main{border-left:0;padding-top:20px}
+  .hero,.match{grid-template-columns:1fr}
+  .top{position:static}
+  .find-bar{top:64px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">The Company Ledger<small>B2 Business English</small></div>
+  <div class="teams" id="teams" aria-label="Teams: tap to choose who is answering"></div>
+  <button class="reset" id="resetAll">Reset lesson</button>
+</header>
+
+<div class="layout">
+  <nav class="elevator" id="elevator" aria-label="Lesson floors"></nav>
+  <main>
+
+    <!-- 0 LOBBY -->
+    <section class="floor" id="f0">
+      <div class="hero">
+        <div>
+          <h2>You're hired. Now climb to the top.</h2>
+          <p>Start on the shop floor and work your way up to the boardroom. Every correct answer earns points for your team.</p>
+        </div>
+        <div class="tower" aria-hidden="true">
+          <div>Strategic <span>long-term goals</span></div>
+          <div>Tactical <span>medium-term plans</span></div>
+          <div>Operational <span>day-to-day tasks</span></div>
+        </div>
+      </div>
+      <div class="activity">
+        <h3>Name your teams</h3>
+        <p class="how">Tap a team at the top of the screen to choose who's answering. Points go to that team.</p>
+        <div class="team-edit" id="teamEdit"></div>
+      </div>
+      <div class="activity">
+        <h3>Warm-up: where does a company get its raw data?</h3>
+        <p class="how">There are four sources. Guess them out loud first, then tap a card to reveal it.</p>
+        <div class="sources" id="sources"></div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="1">Take the elevator to floor 1</button></div>
+    </section>
+
+    <!-- 1 WORDS -->
+    <section class="floor" id="f1">
+      <div class="floor-head">
+        <div class="where">Floor 1: operational level</div>
+        <h2>Learn the words</h2>
+        <p>Flip the cards, then sort what the company owns from what it owes.</p>
+      </div>
+      <div class="activity">
+        <h3>Flashcards</h3>
+        <p class="how">Read the term, guess the meaning, then tap to flip.</p>
+        <div class="row" id="fcFilters"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="fcShuffle">Shuffle</button>
+          <button class="btn" id="fcFlipAll">Flip all back</button>
+          <button class="chip" id="fcRu" aria-pressed="false">Russian first</button>
+        </div>
+        <div class="cards" id="cards"></div>
+      </div>
+      <div class="activity">
+        <h3>Asset or liability?</h3>
+        <p class="how">Is it something the company owns and benefits from, or a debt it has to pay?</p>
+        <div id="sortAL"></div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="2">Next: floor 2</button></div>
+    </section>
+
+    <!-- 2 SOUNDS -->
+    <section class="floor" id="f2">
+      <div class="floor-head">
+        <div class="where">Floor 2: operational level</div>
+        <h2>Say it like a pro</h2>
+        <p>Hear every word, find the stressed syllable, and match words to their sounds.</p>
+      </div>
+
+      <div class="activity">
+        <h3>Sound board</h3>
+        <p class="how">Tap a word to hear it. The underlined syllable is the stressed one: say it louder and longer. Repeat after the speaker.</p>
+        <div class="row" style="margin-bottom:14px">
+          <span class="note">Voice:</span>
+          <button class="chip" data-accent="en-US" aria-pressed="true">American</button>
+          <button class="chip" data-accent="en-GB" aria-pressed="false">British</button>
+          <button class="chip" id="slow" aria-pressed="false">Slow</button>
+        </div>
+        <div class="sound-grid" id="soundGrid"></div>
+        <p class="note" id="audioNote" style="margin-top:12px">Transcriptions show American pronunciation. Audio uses your device's built-in voice.</p>
+      </div>
+
+      <div class="activity">
+        <h3>Tricky sounds for Russian speakers</h3>
+        <p class="how">Read the tip, tap the examples, and say them together.</p>
+        <div class="tips" id="tips"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Stress moves when the word grows</h3>
+        <div class="rule">
+          <p>With the endings <b>-tion</b>, <b>-ic</b>, <b>-ity</b> and <b>-ial</b>, the stress falls on the syllable <b>just before</b> the ending.</p>
+        </div>
+        <div class="tbl"><table>
+          <thead><tr><th>Short word</th><th>Longer word</th><th></th></tr></thead>
+          <tbody id="shiftTable"></tbody>
+        </table></div>
+      </div>
+
+      <div class="activity">
+        <h3>Stress hunter</h3>
+        <p class="how">Tap the syllable that is stressed. You'll hear the word when you get it right.</p>
+        <div id="stressGame"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Listen and choose</h3>
+        <p class="how">Press play, listen carefully, then tap the word you heard.</p>
+        <div id="listenGame"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Match the sounds</h3>
+        <p class="how">Tap a word (you'll hear it), then tap its transcription.</p>
+        <div class="match" id="soundMatch"></div>
+        <div class="row" style="margin-top:14px"><button class="btn" id="soundMatchNew">New round</button></div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="3">Promotion! Go to floor 3</button></div>
+    </section>
+
+    <!-- 3 PRACTICE -->
+    <section class="floor" id="f3">
+      <div class="floor-head">
+        <div class="where">Floor 3: tactical level</div>
+        <h2>Put the words to work</h2>
+        <p>Match terms to meanings, then complete real workplace sentences.</p>
+      </div>
+      <div class="activity">
+        <h3>Match it</h3>
+        <p class="how">Tap a term, then tap its definition. Clear the board, then start a new round.</p>
+        <div class="match" id="match"></div>
+        <div class="row" style="margin-top:14px"><button class="btn" id="matchNew">New round</button></div>
+      </div>
+      <div class="activity">
+        <h3>Fill the gaps</h3>
+        <p class="how">Tap a gap, then tap the word that fits.</p>
+        <div class="bank" id="bank"></div>
+        <ol class="gaps" id="gaps"></ol>
+        <div class="row" style="margin-top:16px"><button class="btn" id="gapsReset">Start over</button></div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="4">Next: floor 4</button></div>
+    </section>
+
+    <!-- 4 GRAMMAR -->
+    <section class="floor" id="f4">
+      <div class="floor-head">
+        <div class="where">Floor 4: tactical level</div>
+        <h2>Grammar of the office</h2>
+        <p>Accountants write in the passive, managers rely on the right prepositions, and everyone needs the right word form.</p>
+      </div>
+
+      <div class="activity">
+        <h3>1. The passive voice</h3>
+        <div class="rule">
+          <p><b>be + past participle (V3).</b> Use the passive when the action or result matters more than who did it. It's everywhere in reports and accounting.</p>
+          <p>Add <b>by + person</b> only when it's important who did it: <i>The sale was approved by the board.</i></p>
+        </div>
+        <div class="tbl"><table>
+          <thead><tr><th>Tense</th><th>Form</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Present simple</td><td>am / is / are + V3</td><td>Transactions <b>are recorded</b> every day.</td></tr>
+            <tr><td>Past simple</td><td>was / were + V3</td><td>The payment <b>was authorized</b> yesterday.</td></tr>
+            <tr><td>Present perfect</td><td>has / have been + V3</td><td>The old warehouse <b>has been sold</b>.</td></tr>
+            <tr><td>Future</td><td>will be + V3</td><td>A new supplier <b>will be chosen</b> next quarter.</td></tr>
+            <tr><td>Modal</td><td>must / can / should be + V3</td><td>All invoices <b>must be checked</b>.</td></tr>
+          </tbody>
+        </table></div>
+        <h4>Choose the correct form</h4>
+        <div id="passiveQuiz"></div>
+        <h4>Say it in the passive</h4>
+        <p class="how">Say your answer out loud, then tap to check.</p>
+        <div id="passiveSay"></div>
+      </div>
+
+      <div class="activity">
+        <h3>2. Word + preposition</h3>
+        <div class="rule">
+          <p>These words always travel with the same preposition. Learn them as one chunk: <b>rely on</b>, <b>concerned about</b>, <b>impact on</b>, <b>invest in</b>, <b>responsible for</b>, <b>allocate to</b>, <b>commitment to</b>, <b>compared with</b>.</p>
+        </div>
+        <div id="prepQuiz"></div>
+      </div>
+
+      <div class="activity">
+        <h3>3. Word formation</h3>
+        <div class="rule">
+          <p>Endings change the job of a word. <b>-tion / -ation</b> and <b>-ment</b> make nouns from verbs. <b>-er / -ant</b> make a person. <b>-ity</b> makes a noun from an adjective. <b>-ly</b> makes an adverb. <b>in-</b> makes the opposite.</p>
+        </div>
+        <div class="tbl"><table>
+          <thead><tr><th>Verb / adjective</th><th>Noun</th><th>Person or adverb</th></tr></thead>
+          <tbody>
+            <tr><td>allocate</td><td>alloc<b>ation</b></td><td>–</td></tr>
+            <tr><td>commit</td><td>commit<b>ment</b></td><td>–</td></tr>
+            <tr><td>account</td><td>account<b>ing</b></td><td>account<b>ant</b></td></tr>
+            <tr><td>liable</td><td>liabil<b>ity</b></td><td>–</td></tr>
+            <tr><td>meticulous</td><td>meticulous<b>ness</b></td><td>meticulous<b>ly</b></td></tr>
+            <tr><td>frequent</td><td>frequency</td><td><b>in</b>frequent (opposite)</td></tr>
+          </tbody>
+        </table></div>
+        <div id="formQuiz"></div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="5">Next: floor 5</button></div>
+    </section>
+
+    <!-- 5 READING -->
+    <section class="floor" id="f5">
+      <div class="floor-head">
+        <div class="where">Floor 5: strategic level</div>
+        <h2>Reading: Mila's first quarter</h2>
+        <p>A new accountant learns how a company really works. Predict, read, choose the right word forms, then prove you understood.</p>
+      </div>
+
+      <div class="activity">
+        <h3>Before you read</h3>
+        <p class="how">Discuss in pairs for two minutes.</p>
+        <ol class="quiz" style="font-size:19px">
+          <li>What do you think a junior accountant does in her first week?</li>
+          <li>The title says "first quarter". How long is that? What could go wrong in that time?</li>
+          <li>Why might a company with lots of assets still have money problems?</li>
+        </ol>
+      </div>
+
+      <div class="activity">
+        <h3>Read the story</h3>
+        <div class="row" style="margin-bottom:16px">
+          <button class="chip" data-mode="translate" aria-pressed="true">Tap to translate</button>
+          <button class="chip" data-mode="find" aria-pressed="false">Find the word game</button>
+          <button class="btn" id="readAloud">Read aloud</button>
+        </div>
+        <div class="find-bar" id="findBar" aria-live="polite"></div>
+        <div class="reading" id="reading"></div>
+      </div>
+
+      <div class="activity">
+        <h3>True or false?</h3>
+        <div id="tfQuiz"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Talk about it</h3>
+        <p class="how">Answer in full sentences, then tap to see a model answer.</p>
+        <div id="compQs"></div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="6">Promotion! Go to the boardroom</button></div>
+    </section>
+
+    <!-- 6 BOARDROOM -->
+    <section class="floor" id="f6">
+      <div class="floor-head">
+        <div class="where">Floor 6: strategic level</div>
+        <h2>Think like the boss</h2>
+        <p>Decide who makes which call, then argue your case in front of the board.</p>
+      </div>
+      <div class="activity">
+        <h3>Who makes this decision?</h3>
+        <p class="how">Strategic, tactical or operational? Be ready to explain why.</p>
+        <div id="sortLevel"></div>
+      </div>
+      <div class="activity">
+        <h3>Boardroom debate</h3>
+        <p class="how">Spin a question. Speak for one minute using at least three words from today and one passive sentence.</p>
+        <div class="spin-out" id="spinOut">Ready when you are.</div>
+        <div class="row">
+          <button class="btn primary" id="spin">Spin a question</button>
+          <button class="btn" id="timerBtn">Start 60s timer</button>
+          <span class="timer" id="timer" aria-live="polite">60</span>
+        </div>
+      </div>
+      <div class="row"><button class="btn primary" data-go="7">Go to the rooftop for the boss round</button></div>
+    </section>
+
+    <!-- 7 BOSS -->
+    <section class="floor" id="f7">
+      <div class="floor-head">
+        <div class="where">Rooftop: boss round</div>
+        <h2>Ten questions. Twenty seconds each.</h2>
+        <p>Words, sounds and grammar. Correct answers are worth 2 points. Switch teams between questions to take turns.</p>
+      </div>
+      <div class="activity" id="boss"></div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ================= DATA ================= */
+const V = {
+  strategic:{t:"Strategic level",d:"The top management level, focusing on long-term goals and the company's overall direction.",ru:"стратегический уровень",g:"Management"},
+  tactical:{t:"Tactical level",d:"The middle management level, focusing on medium-term plans and resource allocation.",ru:"тактический уровень",g:"Management"},
+  operational:{t:"Operational level",d:"The lower management level, focusing on day-to-day activities and short-term tasks.",ru:"операционный уровень",g:"Management"},
+  hierarchy:{t:"Hierarchy",d:"A system of levels of authority in an organisation.",ru:"иерархия",g:"Management"},
+  allocate:{t:"To allocate resources",d:"To distribute or direct resources to a particular purpose.",ru:"распределять, направлять ресурсы",g:"Management"},
+  accounting:{t:"Accounting",d:"Identifying, recording, measuring, classifying and communicating financial information.",ru:"бухгалтерский учёт",g:"Accounting"},
+  bookkeeping:{t:"Bookkeeping",d:"The routine, mechanical part of accounting: recording transactions systematically.",ru:"счетоводство",g:"Accounting"},
+  accountant:{t:"Accountant",d:"A professional who prepares and analyses financial records.",ru:"бухгалтер",g:"Accounting"},
+  bookkeeper:{t:"Bookkeeper",d:"A person who records a company's daily financial transactions.",ru:"счетовод",g:"Accounting"},
+  measuring:{t:"Measuring",d:"Putting a value or number on something.",ru:"измерение",g:"Accounting"},
+  ledgers:{t:"Ledgers",d:"Books or records where financial transactions are written down.",ru:"бухгалтерские книги",g:"Accounting"},
+  bankstatement:{t:"Bank statement",d:"An official list of all transactions on a bank account for a period.",ru:"выписка из банка",g:"Accounting"},
+  rawdata:{t:"Raw data",d:"Information that has been collected but not yet processed.",ru:"необработанные данные",g:"Accounting"},
+  meticulous:{t:"Meticulous",d:"Very careful and precise about every detail.",ru:"тщательный",g:"Accounting"},
+  infosystem:{t:"Information system",d:"A system for collecting, storing and processing data to support decisions.",ru:"информационная система",g:"Accounting"},
+  stakeholders:{t:"Stakeholders",d:"People or groups interested in a company's performance: owners, employees, creditors.",ru:"заинтересованные стороны",g:"Partners & duties"},
+  obligations:{t:"Obligations",d:"Duties or commitments, especially financial ones.",ru:"обязательства",g:"Partners & duties"},
+  commitment:{t:"Commitment",d:"A promise or firm agreement to do something.",ru:"обязательство",g:"Partners & duties"},
+  duty:{t:"Duty",d:"Something you must do for moral or legal reasons.",ru:"долг",g:"Partners & duties"},
+  loan:{t:"Loan repayment",d:"Paying back money that was borrowed.",ru:"погашение кредита",g:"Partners & duties"},
+  contra:{t:"Contra-agent",d:"A party to a contract or transaction: a partner, supplier or customer.",ru:"контрагент",g:"Partners & duties"},
+  entity:{t:"Entity",d:"An organisation with its own separate legal identity.",ru:"организация",g:"Partners & duties"},
+  asset:{t:"Asset",d:"A resource with economic value that is owned with the expectation of future benefit.",ru:"актив, средства",g:"Own & owe"},
+  expectation:{t:"Expectation",d:"A belief that something will happen.",ru:"ожидание",g:"Own & owe"},
+  liability:{t:"Liability",d:"A company's legal financial debts or obligations.",ru:"пассив, обязательство",g:"Own & owe"},
+  acquiring:{t:"Acquiring or selling assets",d:"Buying or getting rid of company property.",ru:"приобретение или продажа активов",g:"Own & owe"},
+  inventory:{t:"Inventory levels",d:"How much stock a company has at a given time.",ru:"уровень запасов",g:"Own & owe"},
+  rawmat:{t:"Raw materials",d:"Basic materials used to make products.",ru:"сырьё",g:"Own & owe"},
+  production:{t:"Production volumes",d:"The amount of goods a company produces.",ru:"производственные объёмы",g:"Own & owe"},
+  purchase:{t:"Purchase",d:"Something bought, or the act of buying it.",ru:"покупка",g:"Own & owe"},
+  sound:{t:"To make sound decisions",d:"To make wise decisions based on good judgement.",ru:"принимать правильные решения",g:"Decisions"},
+  rely:{t:"To rely on",d:"To depend on someone or something.",ru:"полагаться на",g:"Decisions"},
+  concerned:{t:"Concerned",d:"Worried about something, or involved in it.",ru:"обеспокоенный",g:"Decisions"},
+  infrequent:{t:"Infrequent",d:"Not happening often.",ru:"редкий",g:"Decisions"},
+  impact:{t:"Impact",d:"A strong effect on something.",ru:"влияние",g:"Decisions"},
+  forecasts:{t:"Economic forecasts",d:"Predictions about future economic conditions.",ru:"экономические прогнозы",g:"Decisions"},
+  benchmarking:{t:"Benchmarking",d:"Comparing your company's performance with competitors.",ru:"сравнительный анализ с конкурентами",g:"Decisions"},
+  quarter:{t:"Quarter",d:"A three-month period of the financial year.",ru:"квартал",g:"Decisions"},
+  flows:{t:"Flows",d:"Movements of money, goods or information through a system.",ru:"потоки",g:"Decisions"},
+  authorize:{t:"Authorize",d:"To give official permission for something.",ru:"разрешать",g:"Decisions"}
+};
+
+/* pronunciation: w, syllables, stressed index, American IPA */
+const P = [
+  ["strategic",["stra","te","gic"],1,"/strəˈtiːdʒɪk/"],
+  ["tactical",["tac","ti","cal"],0,"/ˈtæktɪkəl/"],
+  ["operational",["o","pe","ra","tion","al"],2,"/ˌɑːpəˈreɪʃənəl/"],
+  ["hierarchy",["hi","er","ar","chy"],0,"/ˈhaɪərɑːrki/"],
+  ["allocate",["al","lo","cate"],0,"/ˈæləkeɪt/"],
+  ["accounting",["ac","coun","ting"],1,"/əˈkaʊntɪŋ/"],
+  ["accountant",["ac","coun","tant"],1,"/əˈkaʊntənt/"],
+  ["bookkeeper",["book","kee","per"],0,"/ˈbʊkkiːpər/"],
+  ["measuring",["mea","sur","ing"],0,"/ˈmeʒərɪŋ/"],
+  ["ledger",["led","ger"],0,"/ˈledʒər/"],
+  ["meticulous",["me","tic","u","lous"],1,"/məˈtɪkjələs/"],
+  ["stakeholder",["stake","hold","er"],0,"/ˈsteɪkhoʊldər/"],
+  ["obligation",["ob","li","ga","tion"],2,"/ˌɑːblɪˈɡeɪʃən/"],
+  ["commitment",["com","mit","ment"],1,"/kəˈmɪtmənt/"],
+  ["entity",["en","ti","ty"],0,"/ˈentəti/"],
+  ["asset",["as","set"],0,"/ˈæset/"],
+  ["liability",["li","a","bil","i","ty"],2,"/ˌlaɪəˈbɪləti/"],
+  ["expectation",["ex","pec","ta","tion"],2,"/ˌekspekˈteɪʃən/"],
+  ["inventory",["in","ven","to","ry"],0,"/ˈɪnvəntɔːri/"],
+  ["purchase",["pur","chase"],0,"/ˈpɜːrtʃəs/"],
+  ["infrequent",["in","fre","quent"],1,"/ɪnˈfriːkwənt/"],
+  ["impact",["im","pact"],0,"/ˈɪmpækt/"],
+  ["forecast",["fore","cast"],0,"/ˈfɔːrkæst/"],
+  ["benchmarking",["bench","mark","ing"],0,"/ˈbentʃmɑːrkɪŋ/"],
+  ["quarter",["quar","ter"],0,"/ˈkwɔːrtər/"],
+  ["authorize",["au","thor","ize"],0,"/ˈɔːθəraɪz/"],
+  ["concerned",["con","cerned"],1,"/kənˈsɜːrnd/"],
+  ["acquiring",["ac","quir","ing"],1,"/əˈkwaɪərɪŋ/"],
+  ["volume",["vol","ume"],0,"/ˈvɑːljuːm/"]
+].map(([w,syl,s,ipa])=>({w,syl,s,ipa}));
+
+const TIPS = [
+  ["TH in authorize","Put your tongue between your teeth and blow. It's not s, f or z.",["authorize","authority","three months"]],
+  ["W in quarter","Round your lips like a kiss. W is never v in these words.",["quarter","acquiring","infrequent"]],
+  ["The end of purchase","It sounds like \"PUR-chis\", not \"pur-CHASE\".",["purchase","purchases"]],
+  ["G and DG like in job","Soft /dʒ/ sound.",["strategic","ledger","ledgers"]],
+  ["S like in treasure","This S is the soft /ʒ/ sound, like Russian ж.",["measuring","measure"]],
+  ["CH that sounds like K","Greek words keep the K sound.",["hierarchy","hierarchical"]],
+  ["Double K, one sound","Say one long K, don't repeat it.",["bookkeeper","bookkeeping"]],
+  ["Keep the final D voiced","Don't turn a final D into T.",["concerned","authorized","recorded"]]
+];
+
+const SHIFT = [
+  ["operate","/ˈɑːpəreɪt/","operational","/ˌɑːpəˈreɪʃənəl/"],
+  ["strategy","/ˈstrætədʒi/","strategic","/strəˈtiːdʒɪk/"],
+  ["allocate","/ˈæləkeɪt/","allocation","/ˌæləˈkeɪʃən/"],
+  ["authorize","/ˈɔːθəraɪz/","authorization","/ˌɔːθərəˈzeɪʃən/"],
+  ["liable","/ˈlaɪəbəl/","liability","/ˌlaɪəˈbɪləti/"],
+  ["finance","/ˈfaɪnæns/","financial","/faɪˈnænʃəl/"]
+];
+
+const PRAISE = ["Spot on!","You nailed it!","Exactly right!","Brilliant!","Look at you go!","Couldn't have said it better myself.","You're on fire today!","Perfect!","That's the one!","Great thinking!","Impressive!","You've got it!"];
+const OOPS = ["Not quite. Try again!","Close! One more go.","Hmm, think again.","Nearly there!"];
+
+const SOURCES = [["Financial reports","numbers the company publishes"],["Suppliers and buyers","the people you trade with"],["Tax regulations","rules from the government"],["Internet and social media","what the world is saying"]];
+
+const AL = [
+  {text:"Cash in the company bank account",a:0,why:"Cash has value and the company owns it."},
+  {text:"A bank loan",a:1,why:"Borrowed money must be paid back, so it's a debt."},
+  {text:"Raw materials in the warehouse",a:0,why:"They'll become products and bring future benefit."},
+  {text:"An unpaid invoice from a supplier",a:1,why:"The company still owes this money."},
+  {text:"The company's delivery van",a:0,why:"Owned equipment that helps the business earn money."},
+  {text:"Taxes owed to the government",a:1,why:"A legal obligation to pay."},
+  {text:"Finished products waiting to be sold",a:0,why:"Inventory is an asset: it will be sold for money."},
+  {text:"Salaries owed to employees",a:1,why:"The work is done, but payment is still owed."},
+  {text:"Money customers still owe us",a:0,why:"The company expects to receive it: a future benefit."},
+  {text:"A loan repayment due next month",a:1,why:"A financial obligation the company must meet."}
+];
+
+const LEVELS = [
+  {text:"Decide whether to expand into Europe in the next five years",a:0,why:"Long-term direction of the whole company."},
+  {text:"Set the company's mission and long-term goals",a:0,why:"That's the job of top management."},
+  {text:"Approve selling an old factory",a:0,why:"Acquiring or selling major assets shapes the company's future."},
+  {text:"Allocate the marketing budget for next quarter",a:1,why:"Medium-term planning and resource allocation."},
+  {text:"Plan production volumes for the next six months",a:1,why:"A medium-term plan to reach strategic goals."},
+  {text:"Use benchmarking to adjust this year's sales plan",a:1,why:"Middle managers turn analysis into plans."},
+  {text:"Check this morning's inventory levels",a:2,why:"A day-to-day task."},
+  {text:"Record today's purchases in the ledger",a:2,why:"Routine bookkeeping happens at the operational level."},
+  {text:"Order raw materials for tomorrow's shift",a:2,why:"Short-term and practical."},
+  {text:"Compare yesterday's payments with the bank statement",a:2,why:"Daily routine checking."}
+];
+
+const GAPS = [
+  ["The finance director refused to "," the payment until every invoice was checked.","authorize"],
+  ["She is a very "," accountant: she double-checks every single entry.","meticulous"],
+  ["Our bank loan is recorded as a "," on the balance sheet.","liability"],
+  ["Owners, employees and creditors are all "," of the company.","stakeholders"],
+  ["We are "," our prices against three main competitors.","benchmarking"],
+  ["Sales dropped sharply in the third "," of the year.","quarter"],
+  ["Before the analysis, the team collected tons of "," from social media.","raw data"],
+  ["You can't just "," gut feeling; you need real numbers.","rely on"]
+];
+
+const PASSIVE = [
+  {q:"Every transaction ___ in the ledger.",opts:["is recorded","records","is recording"],a:"is recorded"},
+  {q:"The payment ___ by the director yesterday.",opts:["was authorized","authorized","has authorizing"],a:"was authorized"},
+  {q:"Inventory levels ___ every morning.",opts:["are checked","check","are checking"],a:"are checked"},
+  {q:"A new supplier ___ next quarter.",opts:["will be chosen","will choose","is choose"],a:"will be chosen"},
+  {q:"The report ___ to all stakeholders last week.",opts:["was sent","sent","has send"],a:"was sent"},
+  {q:"The old warehouse ___.",opts:["has already been sold","has already sold","is already selling"],a:"has already been sold"},
+  {q:"All invoices ___ before payment.",opts:["must be checked","must check","must checked"],a:"must be checked"}
+];
+const PASSIVE_SAY = [
+  ["The accountant checks the bank statement every Friday.","The bank statement is checked every Friday."],
+  ["The board approved the sale.","The sale was approved by the board."],
+  ["Someone has stolen the ledgers!","The ledgers have been stolen!"],
+  ["We will allocate new resources next quarter.","New resources will be allocated next quarter."],
+  ["Managers must make sound decisions.","Sound decisions must be made by managers."]
+];
+const PREP = [
+  {q:"Managers rely ___ accurate data.",opts:["on","in","at","about"],a:"on"},
+  {q:"The directors are concerned ___ rising debts.",opts:["about","on","for","with"],a:"about"},
+  {q:"New tax rules had a big impact ___ our profits.",opts:["on","to","in","at"],a:"on"},
+  {q:"The company decided to invest ___ new machines.",opts:["in","on","to","for"],a:"in"},
+  {q:"Bookkeepers are responsible ___ recording transactions.",opts:["for","of","to","about"],a:"for"},
+  {q:"We allocated more resources ___ marketing.",opts:["to","for","on","in"],a:"to"},
+  {q:"We made a commitment ___ our new contra-agent.",opts:["to","for","with","on"],a:"to"},
+  {q:"Our results look weak compared ___ our competitors.",opts:["with","on","for","at"],a:["with","to"],why:"Both \"compared with\" and \"compared to\" are correct."}
+];
+const FORM = [
+  {q:"Resource ___ is the main job of tactical managers. (ALLOCATE)",opts:["allocation","allocating","allocator"],a:"allocation"},
+  {q:"We need written ___ before we can spend the money. (AUTHORIZE)",opts:["authorization","authorize","authorizing"],a:"authorization"},
+  {q:"Our ___ for this quarter were too high. (EXPECT)",opts:["expectations","expects","expected"],a:"expectations"},
+  {q:"The company has a legal ___ to pay taxes. (OBLIGE)",opts:["obligation","obliging","obliged"],a:"obligation"},
+  {q:"A good bookkeeper works ___. (METICULOUS)",opts:["meticulously","meticulous","meticulousness"],a:"meticulously"},
+  {q:"Meetings with investors are ___: only twice a year. (FREQUENT)",opts:["infrequent","frequently","unfrequent"],a:"infrequent"},
+  {q:"My sister works as an ___ at a bank. (ACCOUNT)",opts:["accountant","accounting","accounter"],a:"accountant"},
+  {q:"Loans are shown as ___ on the balance sheet. (LIABLE)",opts:["liabilities","liables","liability's"],a:"liabilities"}
+];
+
+const READING = [
+  "When Mila joined Brightline Foods as a junior [[accountant|accountant]], she quickly learned that the company {{is organized|organizes|is organizing::The company doesn't organize itself. Passive: be + V3.}} like a [[hierarchy|hierarchy]]. On the top floor, the directors work at the [[strategic|strategic level]], deciding where the company should be in five years. One floor below, managers at the [[tactical|tactical level]] plan the next [[quarter|quarter]] and decide how [[allocate|to allocate resources]]. Downstairs, at the [[operational|operational level]], the team handles every [[purchase|purchase]] and checks [[inventory|inventory levels]] each morning.",
+  "Mila's first week was mostly [[bookkeeping|bookkeeping]]. She sat next to Oleg, the company's most {{experienced|experiencing|experience::Before a noun, use the adjective form.}} [[bookkeeper|bookkeeper]], recording transactions in the [[ledgers|ledgers]] and comparing them with each [[bankstatement|bank statement]]. \"Bookkeeping is the routine part,\" Oleg told her. \"[[accounting|Accounting]] is bigger: identifying, [[measuring|measuring]] and explaining what the numbers mean.\" He was famously [[meticulous|meticulous]]. He once spent a whole afternoon {{searching|to search|search::spend time + verb-ing}} for forty missing cents.",
+  "In her second week, Mila {{was asked|asked|has asked::Someone asked Mila. Passive, past simple.}} to prepare a report for the directors. The company's [[infosystem|information system]] was full of [[rawdata|raw data]]: financial reports, messages from suppliers and buyers, new tax regulations, even comments from social media. Her job was to turn it into something the [[stakeholders|stakeholders]], including the owners, the employees and the bank, could [[rely|rely on]] [[sound|to make sound decisions]].",
+  "The report showed a problem. Brightline had several [[obligations|obligations]] coming up: a large [[loan|loan repayment]] in March and a [[commitment|commitment]] to buy [[rawmat|raw materials]] from a new [[contra|contra-agent]], a farming [[entity|entity]] in the south. The company had plenty of [[asset|assets]], but most of them were machines and stock, not cash. Meanwhile, its [[liability|liabilities]] {{were growing|was growing|grew up::'Liabilities' is plural.}}. The directors felt it was their [[duty|duty]] to act before things {{became|become|will become::No 'will' after 'before'. Past simple here.}} serious.",
+  "At the next board meeting, the finance director presented [[forecasts|economic forecasts]] and the results of [[benchmarking|benchmarking]] against two competitors. Both rivals had lower [[production|production volumes]] but much {{healthier|healthy|more healthy::Short adjective ending in -y becomes -ier.}} cash [[flows|flows]]. After a long {{discussion|discuss|discussing::After 'a long' we need a noun.}}, the board agreed to [[authorize|authorize]] one sale: an old warehouse. It was the first time Mila {{had seen|saw|has seen::'It was the first time' + past perfect.}} [[acquiring|acquiring or selling assets]] discussed at the top level.",
+  "Problems like this are [[infrequent|infrequent]] at Brightline, but everyone was [[concerned|concerned]]. The [[impact|impact]] of one missed payment could travel through every level of the company. Mila had the [[expectation|expectation]] that her first quarter would be quiet. Instead, she learned more in three months {{than|then|that::Comparisons use 'than', not 'then'.}} in three years at university."
+];
+const TF = [
+  {q:"Mila started at Brightline as a bookkeeper.",opts:["True","False"],a:"False",why:"She joined as a junior accountant.",noShuffle:true},
+  {q:"Oleg thinks accounting is wider than bookkeeping.",opts:["True","False"],a:"True",why:"He calls bookkeeping \"the routine part\".",noShuffle:true},
+  {q:"The information system only contained financial reports.",opts:["True","False"],a:"False",why:"It also had supplier messages, tax regulations and social media comments.",noShuffle:true},
+  {q:"Most of Brightline's assets were cash.",opts:["True","False"],a:"False",why:"Most were machines and stock.",noShuffle:true},
+  {q:"The competitors produced more than Brightline.",opts:["True","False"],a:"False",why:"They had lower production volumes.",noShuffle:true},
+  {q:"The board decided to sell an old warehouse.",opts:["True","False"],a:"True",why:"They authorized one sale.",noShuffle:true},
+  {q:"Problems like this happen often at Brightline.",opts:["True","False"],a:"False",why:"They are infrequent.",noShuffle:true}
+];
+const COMP = [
+  ["Describe the three levels of management at Brightline.","The directors work at the strategic level and plan five years ahead. Tactical managers plan the next quarter and allocate resources. The operational team handles purchases and inventory every day."],
+  ["What is the difference between bookkeeping and accounting, according to Oleg?","Bookkeeping is the routine recording of transactions. Accounting is wider: it also measures and explains what the numbers mean."],
+  ["Why did Brightline have a problem even though it had lots of assets?","Most assets were machines and stock, not cash, while loan repayments and other liabilities were coming up."],
+  ["Why did the board decide to sell the warehouse?","To get cash and meet their obligations, after comparing their cash flows with competitors'."],
+  ["What did Mila learn in her first quarter? Would you like her job?","Open answer. Try to use at least two words from the story."]
+];
+
+const DEBATE = [
+  "Which level of management matters most for a company's success, and why?",
+  "Should companies use social media as a source of data for big decisions?",
+  "Would you rather be an accountant or a bookkeeper? Why?",
+  "Is it better to rely on data or on experience when making decisions?",
+  "Should a young company take a bank loan to grow faster? Think about liabilities.",
+  "Can benchmarking against competitors ever be a bad idea?",
+  "Which stakeholders should a company care about most: owners, employees or customers?",
+  "Was Brightline right to sell the warehouse? What else could they have done?",
+  "Would you buy or lease a company car? Talk about assets and obligations.",
+  "Why are meticulous people valuable in finance?"
+];
+
+const BOSS = [
+  ["Who records daily transactions in the ledgers?","A bookkeeper",["A stakeholder","A contra-agent","The CEO"]],
+  ["\"Meticulous\" means…","Very careful about details",["Not happening often","Worried","Very rich"]],
+  ["A supplier you sign a contract with is your…","Contra-agent",["Liability","Quarter","Asset"]],
+  ["Which level focuses on long-term goals?","Strategic",["Tactical","Operational","Bookkeeping"]],
+  ["A quarter of the financial year is…","Three months",["One year","25% of the company","A bank statement"]],
+  ["Comparing your company with competitors is called…","Benchmarking",["Bookkeeping","Forecasting","Authorizing"]],
+  ["Which of these is a liability?","A bank loan",["Cash","Inventory","A delivery van"]],
+  ["Where is the stress in \"liability\"?","li-a-BIL-i-ty",["LI-a-bil-i-ty","li-A-bil-i-ty","li-a-bil-I-ty"]],
+  ["Where is the stress in \"meticulous\"?","me-TIC-u-lous",["ME-tic-u-lous","me-tic-U-lous","me-tic-u-LOUS"]],
+  ["How does \"purchase\" end?","Like \"chis\"",["Like \"chase\"","Like \"chaise\"","Like \"cheese\""]],
+  ["Choose the passive sentence.","The invoice was paid yesterday.",["We paid the invoice yesterday.","The invoice paid yesterday.","We were paying the invoice."]],
+  ["Managers rely ___ accurate data.","on",["in","about","at"]],
+  ["The directors are concerned ___ rising debts.","about",["on","in","to"]],
+  ["We need written ___ (AUTHORIZE) before paying.","authorization",["authorize","authority","authorized"]]
+];
+
+/* ================= HELPERS ================= */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let toastT;
+function toast(msg,bad,pts){
+  const t=$("#toast");
+  t.innerHTML=esc(msg)+(pts?`<span class="plus">+${pts} ${esc(teams[active].name)}</span>`:"");
+  t.classList.toggle("bad",!!bad);t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1700);
+}
+function shake(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
+
+/* ---------- speech ---------- */
+const HAS_TTS="speechSynthesis" in window;
+let voices=[],accent="en-US",slow=false;
+function loadVoices(){voices=speechSynthesis.getVoices()}
+if(HAS_TTS){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function speak(text,rate){
+  if(!HAS_TTS){toast("Audio isn't available in this browser",true);return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang=accent;
+  const v=voices.find(v=>v.lang.replace("_","-")===accent)||voices.find(v=>v.lang.startsWith("en"));
+  if(v)u.voice=v;u.rate=rate||(slow?.6:.9);
+  speechSynthesis.speak(u);return u;
+}
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-accent]");
+  if(a){accent=a.dataset.accent;$$("[data-accent]").forEach(c=>c.setAttribute("aria-pressed",c===a))}
+  const s=e.target.closest(".say");if(s)speak(s.dataset.say);
+});
+$("#slow").onclick=e=>{slow=!slow;e.currentTarget.setAttribute("aria-pressed",slow)};
+if(!HAS_TTS)$("#audioNote").textContent="Audio isn't available in this browser, so read the transcriptions aloud together. They show American pronunciation.";
+
+function sylHTML(p){return p.syl.map((s,i)=>`<span class="syl${i===p.s?" st":""}">${s}</span>`).join("")}
+
+/* ---------- teams ---------- */
+let teams,active;
+function renderTeams(){
+  $("#teams").innerHTML=teams.map((t,i)=>`<button class="team" aria-pressed="${i===active}" data-i="${i}"><span class="dot"></span>${esc(t.name)} <span class="pts">${t.score}</span></button>`).join("");
+}
+$("#teams").addEventListener("click",e=>{const b=e.target.closest(".team");if(!b)return;active=+b.dataset.i;renderTeams()});
+function award(n=1){teams[active].score+=n;renderTeams();toast(pick(PRAISE),false,n)}
+function miss(el){if(el)shake(el);toast(pick(OOPS),true)}
+function renderTeamEdit(){
+  $("#teamEdit").innerHTML=teams.map((t,i)=>`<input aria-label="Team ${i+1} name" value="${esc(t.name)}" data-i="${i}">`).join("")+
+    `<button class="btn" id="addTeam">Add a team</button><button class="btn" id="resetScores">Reset scores</button>`;
+}
+$("#teamEdit").addEventListener("input",e=>{if(e.target.dataset.i!=null){teams[+e.target.dataset.i].name=e.target.value||"Team";renderTeams()}});
+$("#teamEdit").addEventListener("click",e=>{
+  if(e.target.id==="addTeam"&&teams.length<4){teams.push({name:"Team "+"ABCD"[teams.length],score:0});renderTeamEdit();renderTeams()}
+  if(e.target.id==="resetScores"){teams.forEach(t=>t.score=0);renderTeams()}
+});
+
+/* ---------- floors ---------- */
+const FLOORS=[["L","Lobby","Warm-up"],["1","Words","Flashcards"],["2","Sounds","Pronunciation"],["3","Practice","Match and fill"],["4","Grammar","Passive and more"],["5","Reading","Mila's story"],["6","Boardroom","Decide and debate"],["R","Rooftop","Boss round"]];
+$("#elevator").innerHTML=FLOORS.map((f,i)=>`<button class="floor-btn" data-go="${i}"><span class="num">${f[0]}</span><span class="lbl">${f[1]}<span>${f[2]}</span></span></button>`).join("");
+function go(i){
+  $$(".floor").forEach((s,k)=>s.classList.toggle("active",k===i));
+  $$(".floor-btn").forEach((b,k)=>{if(k===i)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  stopTimer();bossStop();if(HAS_TTS)speechSynthesis.cancel();
+  window.scrollTo({top:0});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(+b.dataset.go)});
+
+/* ---------- lobby ---------- */
+function renderSources(){$("#sources").innerHTML=SOURCES.map((s,i)=>`<button class="source" data-i="${i}">?<span class="hint">tap to reveal</span></button>`).join("")}
+$("#sources").addEventListener("click",e=>{
+  const b=e.target.closest(".source");if(!b||b.classList.contains("revealed"))return;
+  const s=SOURCES[+b.dataset.i];b.classList.add("revealed");b.innerHTML=`<span>${s[0]}<span class="hint">${s[1]}</span></span>`;
+});
+
+/* ---------- flashcards ---------- */
+const GROUPS=["All",...new Set(Object.values(V).map(v=>v.g))];
+let fcGroup,ruFirst,fcOrder;
+function renderFilters(){$("#fcFilters").innerHTML=GROUPS.map(g=>`<button class="chip" aria-pressed="${g===fcGroup}" data-g="${g}">${g}</button>`).join("")}
+$("#fcFilters").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;fcGroup=b.dataset.g;renderFilters();renderCards()});
+function renderCards(){
+  $("#cards").innerHTML=fcOrder.filter(k=>fcGroup==="All"||V[k].g===fcGroup).map(k=>{
+    const v=V[k];
+    const front=`<div class="term">${ruFirst?v.ru:v.t}</div>`;
+    const back=ruFirst?`<div class="term" style="font-size:19px">${v.t}</div><div>${v.d}</div>`:`<div>${v.d}</div><div class="ru">${v.ru}</div>`;
+    return `<button class="fc" aria-label="Flashcard: ${esc(ruFirst?v.ru:v.t)}"><div class="fc-inner"><div class="fc-face">${front}<div class="grp">${v.g}</div></div><div class="fc-face back">${back}</div></div></button>`;
+  }).join("");
+}
+$("#cards").addEventListener("click",e=>{const c=e.target.closest(".fc");if(c)c.classList.toggle("flipped")});
+$("#fcShuffle").onclick=()=>{fcOrder=shuffle(fcOrder);renderCards()};
+$("#fcFlipAll").onclick=()=>$$(".fc").forEach(c=>c.classList.remove("flipped"));
+$("#fcRu").onclick=e=>{ruFirst=!ruFirst;e.currentTarget.setAttribute("aria-pressed",ruFirst);renderCards()};
+
+/* ---------- generic sorter ---------- */
+function makeSorter(root,items,bins){
+  let order,idx,tries,correct;
+  function start(){order=shuffle(items);idx=0;correct=0;draw()}
+  function draw(){
+    tries=0;
+    if(idx>=order.length){
+      root.innerHTML=`<div class="stage"><div class="stage-item">${correct} of ${order.length} on the first try</div><button class="btn primary" data-again>Play again</button></div>`;return;
+    }
+    const it=order[idx];
+    root.innerHTML=`<div class="stage"><div class="stage-item">${esc(it.text)}</div>
+      <div class="bins">${bins.map((b,i)=>`<button class="bin" data-b="${i}">${b}</button>`).join("")}</div>
+      <div class="why" aria-live="polite"></div>
+      <div class="stage-foot"><span class="progress">${idx+1} / ${order.length}</span><button class="btn" data-next hidden>Next</button></div></div>`;
+  }
+  root.addEventListener("click",e=>{
+    if(e.target.closest("[data-again]"))return start();
+    if(e.target.closest("[data-next]")){idx++;return draw()}
+    const b=e.target.closest(".bin");if(!b||b.disabled)return;
+    const it=order[idx];
+    if(+b.dataset.b===it.a){
+      if(tries===0){correct++;award(1)}else toast("That's it!");
+      $$(".bin",root).forEach(x=>x.disabled=true);b.classList.add("right");
+      $(".why",root).textContent=it.why;$("[data-next]",root).hidden=false;
+    }else{tries++;miss(b)}
+  });
+  return {start};
+}
+const sortAL=makeSorter($("#sortAL"),AL,["Asset","Liability"]);
+const sortLevel=makeSorter($("#sortLevel"),LEVELS,["Strategic","Tactical","Operational"]);
+
+/* ---------- generic match ---------- */
+function makeMatch(root,makePairs,rightCls,onTerm){
+  let sel=null,left=0;
+  function round(){
+    const pairs=makePairs();left=pairs.length;sel=null;
+    root.innerHTML=`<div class="col">${shuffle(pairs).map(p=>`<button class="m-item term" data-k="${esc(p.k)}">${esc(p.l)}</button>`).join("")}</div>
+      <div class="col">${shuffle(pairs).map(p=>`<button class="m-item ${rightCls||""}" data-k="${esc(p.k)}">${esc(p.r)}</button>`).join("")}</div>`;
+  }
+  root.addEventListener("click",e=>{
+    const b=e.target.closest(".m-item");if(!b||b.classList.contains("done"))return;
+    if(b.classList.contains("term")){$$(".term",root).forEach(x=>x.classList.remove("sel"));b.classList.add("sel");sel=b;if(onTerm)onTerm(b.dataset.k);return}
+    if(!sel){toast("Tap a word on the left first");return}
+    if(b.dataset.k===sel.dataset.k){
+      b.classList.add("done");sel.classList.add("done");sel.classList.remove("sel");sel=null;left--;award(1);
+      if(left===0)setTimeout(()=>toast("Board cleared! Try a new round."),1800);
+    }else miss(b);
+  });
+  return {round};
+}
+const vocabMatch=makeMatch($("#match"),()=>shuffle(Object.keys(V)).slice(0,6).map(k=>({k,l:V[k].t,r:V[k].d})));
+$("#matchNew").onclick=()=>vocabMatch.round();
+const soundMatch=makeMatch($("#soundMatch"),()=>shuffle(P).slice(0,5).map(p=>({k:p.w,l:p.w,r:p.ipa})),"ipa",w=>speak(w));
+$("#soundMatchNew").onclick=()=>soundMatch.round();
+
+/* ---------- generic choice quiz ---------- */
+function makeQuiz(root,items){
+  function render(){
+    root.innerHTML=`<ol class="quiz">${items.map((it,i)=>{
+      const q=esc(it.q).replace("___",`<span class="gapline">&nbsp;</span>`);
+      const opts=it.noShuffle?it.opts:shuffle(it.opts);
+      return `<li data-i="${i}"><div>${q}</div><div class="qopts">${opts.map(o=>`<button class="qopt" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div><div class="qwhy"></div></li>`;
+    }).join("")}</ol>`;
+  }
+  root.addEventListener("click",e=>{
+    const b=e.target.closest(".qopt");if(!b||b.disabled)return;
+    const li=b.closest("li"),it=items[+li.dataset.i];
+    if([].concat(it.a).includes(b.dataset.o)){
+      b.classList.add("right");$$(".qopt",li).forEach(x=>x.disabled=true);
+      const g=$(".gapline",li);if(g){g.textContent=b.dataset.o;g.classList.add("ok")}
+      if(!li.dataset.tried)award(1);else toast("That's it!");
+      if(it.why)$(".qwhy",li).textContent=it.why;
+    }else{li.dataset.tried=1;b.classList.add("wrong");b.disabled=true;miss(b)}
+  });
+  return {render};
+}
+const quizzes=[makeQuiz($("#passiveQuiz"),PASSIVE),makeQuiz($("#prepQuiz"),PREP),makeQuiz($("#formQuiz"),FORM),makeQuiz($("#tfQuiz"),TF)];
+
+/* ---------- static renders ---------- */
+function reveals(root,list,label){
+  root.innerHTML=list.map(q=>`<details class="q"><summary>${esc(q[0])}</summary><div>${label?label+" ":""}${esc(q[1])}</div></details>`).join("");
+}
+
+/* ---------- sound board, tips, shift ---------- */
+$("#soundGrid").innerHTML=P.map((p,i)=>`<button class="tile" data-i="${i}"><span class="w">${sylHTML(p)}</span><span class="ipa">${p.ipa}</span></button>`).join("");
+$("#soundGrid").addEventListener("click",e=>{
+  const t=e.target.closest(".tile");if(!t)return;
+  $$(".tile").forEach(x=>x.classList.remove("playing"));t.classList.add("playing");
+  const u=speak(P[+t.dataset.i].w);
+  const off=()=>t.classList.remove("playing");
+  if(u)u.onend=off;setTimeout(off,2500);
+});
+$("#tips").innerHTML=TIPS.map(t=>`<div class="tip"><h4>${esc(t[0])}</h4><p>${esc(t[1])}</p>${t[2].map(w=>`<button class="say" data-say="${esc(w)}">${esc(w)}</button>`).join("")}</div>`).join("");
+$("#shiftTable").innerHTML=SHIFT.map(s=>`<tr><td><button class="say" data-say="${s[0]}">${s[0]}</button><div class="ipa note">${s[1]}</div></td><td><button class="say" data-say="${s[2]}">${s[2]}</button><div class="ipa note">${s[3]}</div></td><td></td></tr>`).join("");
+
+/* ---------- stress hunter ---------- */
+const stress=(()=>{
+  const root=$("#stressGame");let order,idx,tries,correct;
+  function start(){order=shuffle(P).slice(0,8);idx=0;correct=0;draw()}
+  function draw(){
+    tries=0;
+    if(idx>=order.length){root.innerHTML=`<div class="stage"><div class="stage-item">${correct} of ${order.length} on the first try</div><button class="btn primary" data-again>Play again</button></div>`;return}
+    const p=order[idx];
+    root.innerHTML=`<div class="stage"><div class="bins">${p.syl.map((s,i)=>`<button class="bin sylbtn" data-s="${i}">${s}</button>`).join("")}</div>
+      <div class="why" aria-live="polite"></div>
+      <div class="stage-foot"><span class="progress">${idx+1} / ${order.length}</span><button class="btn" data-next hidden>Next word</button></div></div>`;
+  }
+  root.addEventListener("click",e=>{
+    if(e.target.closest("[data-again]"))return start();
+    if(e.target.closest("[data-next]")){idx++;return draw()}
+    const b=e.target.closest(".sylbtn");if(!b||b.disabled)return;
+    const p=order[idx];
+    if(+b.dataset.s===p.s){
+      if(tries===0){correct++;award(1)}else toast("That's it!");
+      $$(".sylbtn",root).forEach(x=>x.disabled=true);b.classList.add("right");
+      $(".why",root).innerHTML=`<span class="ipa">${p.ipa}</span>`;$("[data-next]",root).hidden=false;speak(p.w);
+    }else{tries++;miss(b)}
+  });
+  return {start};
+})();
+
+/* ---------- listen and choose ---------- */
+const listen=(()=>{
+  const root=$("#listenGame");let order,idx,tries,correct;
+  function start(){
+    if(!HAS_TTS){root.innerHTML=`<p class="note">This game needs audio, which isn't available in this browser. Try the teacher-read version: read a word aloud and let the class pick it on the sound board.</p>`;return}
+    order=shuffle(P).slice(0,8);idx=0;correct=0;
+    root.innerHTML=`<div class="stage"><div class="stage-item">8 words. Listen carefully.</div><button class="btn primary" data-begin>Start listening</button></div>`;
+  }
+  function draw(){
+    tries=0;
+    if(idx>=order.length){root.innerHTML=`<div class="stage"><div class="stage-item">${correct} of ${order.length} on the first try</div><button class="btn primary" data-again>Play again</button></div>`;return}
+    const p=order[idx];
+    const opts=shuffle([p,...shuffle(P.filter(x=>x.w!==p.w)).slice(0,3)]);
+    root.innerHTML=`<div class="stage"><div class="row" style="justify-content:center;margin-bottom:18px"><button class="btn primary" data-play>▶ Play the word</button><button class="btn" data-slowplay>Play slowly</button></div>
+      <div class="bins">${opts.map(o=>`<button class="bin" data-w="${o.w}">${o.w}</button>`).join("")}</div>
+      <div class="why" aria-live="polite"></div>
+      <div class="stage-foot"><span class="progress">${idx+1} / ${order.length}</span><button class="btn" data-next hidden>Next word</button></div></div>`;
+    speak(p.w);
+  }
+  root.addEventListener("click",e=>{
+    if(e.target.closest("[data-again]"))return start();
+    if(e.target.closest("[data-begin]"))return draw();
+    if(e.target.closest("[data-next]")){idx++;return draw()}
+    if(e.target.closest("[data-play]"))return speak(order[idx].w);
+    if(e.target.closest("[data-slowplay]"))return speak(order[idx].w,.55);
+    const b=e.target.closest(".bin");if(!b||b.disabled)return;
+    const p=order[idx];
+    if(b.dataset.w===p.w){
+      if(tries===0){correct++;award(1)}else toast("That's it!");
+      $$(".bin",root).forEach(x=>x.disabled=true);b.classList.add("right");
+      $(".why",root).innerHTML=`${sylHTML(p)} <span class="ipa note">${p.ipa}</span>`;$("[data-next]",root).hidden=false;
+    }else{tries++;miss(b)}
+  });
+  return {start};
+})();
+
+/* ---------- gaps ---------- */
+let gActive=0;
+function renderGaps(){
+  $("#bank").innerHTML=shuffle(GAPS.map(g=>g[2])).map(w=>`<button class="word" data-w="${w}">${w}</button>`).join("");
+  $("#gaps").innerHTML=GAPS.map((g,i)=>`<li>${esc(g[0])}<button class="blank${i===0?" active":""}" data-i="${i}" aria-label="Gap ${i+1}">&nbsp;</button>${esc(g[1])}</li>`).join("");
+  gActive=0;
+}
+$("#gaps").addEventListener("click",e=>{
+  const b=e.target.closest(".blank");if(!b||b.classList.contains("ok"))return;
+  $$(".blank").forEach(x=>x.classList.remove("active"));b.classList.add("active");gActive=+b.dataset.i;
+});
+$("#bank").addEventListener("click",e=>{
+  const w=e.target.closest(".word");if(!w||w.classList.contains("used"))return;
+  const blank=$(`.blank[data-i="${gActive}"]`);
+  if(!blank||blank.classList.contains("ok")){toast("Tap an empty gap first");return}
+  if(w.dataset.w===GAPS[gActive][2]){
+    blank.textContent=w.dataset.w;blank.classList.remove("active");blank.classList.add("ok");w.classList.add("used");award(1);
+    const next=$(".blank:not(.ok)");if(next){next.classList.add("active");gActive=+next.dataset.i}
+  }else miss(blank);
+});
+$("#gapsReset").onclick=renderGaps;
+
+/* ---------- reading ---------- */
+let readMode="translate",findTargets=[],findIdx=0,wfDone=0,wfTotal=0;
+function wfUpdate(){const c=$("#wfCount");if(c)c.textContent=wfDone<wfTotal?`Grammar spots: ${wfDone} of ${wfTotal} solved. Tap the right form in each yellow box.`:`All ${wfTotal} grammar spots solved!`}
+function renderReading(){
+  wfDone=0;
+  $("#reading").innerHTML=`<h4>Mila's first quarter</h4><p class="wf-count" id="wfCount"></p>`+READING.map(p=>"<p>"+esc(p)
+    .replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,txt)=>`<button class="g" data-k="${k}" data-ru="${esc(V[k].ru)}">${txt}</button>`)
+    .replace(/\{\{([^}]+)\}\}/g,(m,body)=>{const [opts,hint]=body.split("::");const o=opts.split("|");
+      return `<span class="wf" data-a="${o[0]}" data-h="${hint||""}"><span class="wf-gap">?</span>${shuffle(o).map(x=>`<button class="wf-opt" data-o="${x}">${x}</button>`).join("")}</span>`})
+    +"</p>").join("");
+  wfTotal=$$(".wf").length;wfUpdate();
+}
+function setMode(m){
+  readMode=m;$$("[data-mode]").forEach(c=>c.setAttribute("aria-pressed",c.dataset.mode===m));
+  $$(".g").forEach(g=>g.classList.remove("open","found"));
+  const bar=$("#findBar");
+  if(m==="find"){findTargets=shuffle(Object.keys(V)).slice(0,8);findIdx=0;bar.classList.add("on");drawFind()}
+  else bar.classList.remove("on");
+}
+function drawFind(){
+  const bar=$("#findBar");
+  if(findIdx>=findTargets.length){bar.innerHTML=`<div class="def">All 8 found. Great reading!</div><div class="row"><button class="btn" data-findagain>Play again</button></div>`;return}
+  bar.innerHTML=`<div class="note" style="color:inherit;opacity:.8">Find the word or phrase in the story that means:</div><div class="def">${esc(V[findTargets[findIdx]].d)}</div>
+    <div class="row"><span class="progress">${findIdx+1} / ${findTargets.length}</span><button class="btn" data-findskip>Show me</button></div>`;
+}
+document.addEventListener("click",e=>{
+  const m=e.target.closest("[data-mode]");if(m)setMode(m.dataset.mode);
+  if(e.target.closest("[data-findagain]"))setMode("find");
+  if(e.target.closest("[data-findskip]")){
+    const g=$(`.g[data-k="${findTargets[findIdx]}"]`);
+    if(g){g.classList.add("found");g.scrollIntoView({block:"center",behavior:"smooth"})}
+    findIdx++;setTimeout(drawFind,900);
+  }
+});
+$("#reading").addEventListener("click",e=>{
+  const wo=e.target.closest(".wf-opt");
+  if(wo){const wf=wo.closest(".wf");
+    if(wo.dataset.o===wf.dataset.a){wf.outerHTML=`<span class="wf-ok" title="${wf.dataset.h}">${wf.dataset.a}</span>`;
+      if(!wf.dataset.tried)award(1);else toast("That's it!");wfDone++;wfUpdate();}
+    else{wf.dataset.tried=1;wo.disabled=true;wo.classList.add("wrong");shake(wf);toast(wf.dataset.h?"Hint: "+wf.dataset.h:pick(OOPS),true)}
+    return}
+  const g=e.target.closest(".g");if(!g)return;
+  if(readMode==="translate"){g.classList.toggle("open");return}
+  if(findIdx>=findTargets.length||g.classList.contains("found"))return;
+  if(g.dataset.k===findTargets[findIdx]){g.classList.add("found");award(1);findIdx++;drawFind()}
+  else miss(g);
+});
+$("#readAloud").onclick=()=>{
+  if(!HAS_TTS)return toast("Audio isn't available in this browser",true);
+  if(speechSynthesis.speaking){speechSynthesis.cancel();$("#readAloud").textContent="Read aloud";return}
+  const text=READING.map(p=>p.replace(/\[\[\w+\|([^\]]+)\]\]/g,"$1").replace(/\{\{([^|}]+)[^}]*\}\}/g,"$1")).join(" ");
+  const u=speak(text,.9);$("#readAloud").textContent="Stop reading";
+  if(u)u.onend=()=>{$("#readAloud").textContent="Read aloud"};
+};
+
+/* ---------- debate + timer ---------- */
+let pool=[],tInt=null,tLeft=60;
+$("#spin").onclick=()=>{
+  if(!pool.length)pool=shuffle(DEBATE);
+  const q=pool.pop(),out=$("#spinOut");
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){out.textContent=q;return}
+  let n=0;const iv=setInterval(()=>{out.textContent=pick(DEBATE);if(++n>8){clearInterval(iv);out.textContent=q}},70);
+};
+function stopTimer(){clearInterval(tInt);tInt=null;tLeft=60;$("#timer").textContent=60;$("#timerBtn").textContent="Start 60s timer"}
+$("#timerBtn").onclick=()=>{
+  if(tInt){clearInterval(tInt);tInt=null;$("#timerBtn").textContent="Resume";return}
+  if(tLeft<=0)tLeft=60;$("#timerBtn").textContent="Pause";
+  tInt=setInterval(()=>{tLeft--;$("#timer").textContent=tLeft;if(tLeft<=0){clearInterval(tInt);tInt=null;tLeft=60;$("#timerBtn").textContent="Start 60s timer";toast("Time's up! Great speaking.")}},1000);
+};
+
+/* ---------- boss ---------- */
+let bQs,bI,bInt,bLeft,bLocked,bScore;
+function bossStop(){clearInterval(bInt)}
+function bossIntro(){bossStop();$("#boss").innerHTML=`<button class="btn primary" id="bossStart">Start the boss round</button>`}
+function bossStart(){bQs=shuffle(BOSS).slice(0,10);bI=0;bScore=0;bossDraw()}
+function bossDraw(){
+  bossStop();const box=$("#boss");
+  if(bI>=bQs.length){
+    const leader=[...teams].sort((a,b)=>b.score-a.score)[0];
+    box.innerHTML=`<div class="boss-q">Boss round complete: ${bScore} of ${bQs.length} correct.</div>
+      <p>${esc(leader.name)} is leading with ${leader.score} points. Congratulations to the new board of directors!</p>
+      <button class="btn primary" id="bossStart">Play again</button>`;return;
+  }
+  const q=bQs[bI],opts=shuffle([q[1],...q[2]]);bLocked=false;bLeft=20;
+  box.innerHTML=`<div class="row" style="justify-content:space-between"><span class="progress">Question ${bI+1} of ${bQs.length}</span><span class="timer" id="bT">20</span></div>
+    <div class="bar"><i id="bBar"></i></div>
+    <div class="boss-q">${esc(q[0])}</div>
+    <div class="opts">${opts.map(o=>`<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+    <div class="row" style="margin-top:16px"><button class="btn" id="bNext" hidden>Next question</button></div>`;
+  bInt=setInterval(()=>{bLeft--;$("#bT").textContent=bLeft;$("#bBar").style.width=(bLeft/20*100)+"%";if(bLeft<=0)bossReveal(null)},1000);
+}
+function bossReveal(chosen){
+  if(bLocked)return;bLocked=true;bossStop();
+  const q=bQs[bI];
+  $$(".opt").forEach(o=>{o.disabled=true;if(o.dataset.o===q[1])o.classList.add("right")});
+  if(chosen===null)toast("Time's up!",true);
+  else if(chosen.dataset.o===q[1]){bScore++;award(2)}
+  else{chosen.classList.add("wrong");toast("The answer was: "+q[1],true)}
+  $("#bNext").hidden=false;
+}
+$("#boss").addEventListener("click",e=>{
+  if(e.target.id==="bossStart")return bossStart();
+  if(e.target.id==="bNext"){bI++;return bossDraw()}
+  const o=e.target.closest(".opt");if(o&&!bLocked)bossReveal(o);
+});
+
+/* ================= RESET EVERYTHING ================= */
+function resetAll(){
+  teams=[{name:"Team A",score:0},{name:"Team B",score:0}];active=0;
+  renderTeams();renderTeamEdit();renderSources();
+  fcGroup="All";ruFirst=false;fcOrder=Object.keys(V);$("#fcRu").setAttribute("aria-pressed","false");renderFilters();renderCards();
+  sortAL.start();sortLevel.start();
+  vocabMatch.round();soundMatch.round();stress.start();listen.start();
+  renderGaps();quizzes.forEach(q=>q.render());
+  reveals($("#passiveSay"),PASSIVE_SAY,"");reveals($("#compQs"),COMP,"");
+  renderReading();setMode("translate");
+  pool=[];$("#spinOut").textContent="Ready when you are.";
+  bossIntro();go(0);
+}
+let armT;
+$("#resetAll").onclick=e=>{
+  const b=e.currentTarget;
+  if(b.classList.contains("arm")){clearTimeout(armT);b.classList.remove("arm");b.textContent="Reset lesson";resetAll();toast("Fresh start! Everything is reset.");return}
+  b.classList.add("arm");b.textContent="Tap again to reset";
+  armT=setTimeout(()=>{b.classList.remove("arm");b.textContent="Reset lesson"},3000);
+};
+
+resetAll();
+</script>
+</body>
+</html>
